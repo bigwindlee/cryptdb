@@ -1,0 +1,306 @@
+Installation Instructions
+*************************
+
+
+
+Installing from Bazaar
+======================
+
+Get the latest source from:
+
+  $ bzr branch lp:mysql-proxy
+
+Later you can update the tree by running
+
+  $ cd mysql-proxy/
+  $ bzr pull
+
+As you built from BZR none of the configure scripts is prepared. You need:
+
+- autoconf 2.56 or higher
+- automake 1.9 or higher
+- libtool 1.5.x (not higher)
+- flex 
+- gtk-doc
+
+to generate the configure script. Use the provided autogen.sh to rebuild 
+the config-scripts:
+
+  $ sh ./autogen.sh
+
+You should have a configure script, ready to build.
+
+MacOS X
+-------
+
+In case you are using macports some packages are in different locations and need to be adjusted.
+
+pkg-config installs its pkg.m4 into the macports locations while automake looks in 
+/usr/local/share/aclocal. Setting ACLOCAL_FLAGS to get a include directory makes aclocal
+aware of the new location.
+
+  $ ACLOCAL_FLAGS="-I /opt/local/share/aclocal"
+  $ export ACLOCAL_FLAGS
+  $ sh ./autogen.sh
+
+if using fink probably: ACLOCAL_FLAGS="-I /sw/share/aclocal"
+
+
+Installing from Source 
+======================
+
+  $ gzip -cd mysql-proxy-<version>.tar.gz | tar xf -
+  $ cd mysql-proxy-<version>
+
+Preparing the Build
+===================
+
+As you have the source in the right place and the configure script exists, you have 
+to make sure that the dependencies are in place;
+
+- libevent 1.4 or higher
+- lua 5.1.x or higher
+- glib2 2.16.0 or higher
+- pkg-config 
+- mysql 5.0.x or higher developer files
+- flex
+
+Ubuntu/Debian
+-------------
+
+  $ apt-get install \
+      pkg-config \
+      liblua5.1-0 \
+      liblua5.1-dev \
+      libevent-dev \
+      libevent1  \
+      libglib2.0-0 \
+      libglib2.0-dev \
+      libmysqlclient-dev \
+      flex
+
+MacOSX
+------
+
+If you are using darwin-ports pkg-config might not be able to see the glib-2.0.pc in 
+/opt/local/lib/pkgconfig.
+
+  $ ./configure PKG_CONFIG_PATH=/opt/local/lib/pkgconfig \
+                LDFLAGS=-L/opt/local/lib \
+                CPPFLAGS=-I/opt/local/include
+
+openSUSE
+--------
+
+Make sure that the following RPM packages (and their dependencies) are
+installed (use YaST or any other package management tool to install these):
+
+- glib2-devel
+- mysql-devel
+- lua-devel
+- libevent
+- flex
+
+You can convert the source tarball into an installable binary RPM by running
+the following command:
+
+  $ rpmbuild -ta --clean mysql-proxy-<version>.tar.gz
+
+The binary will be installed in /usr/sbin/mysql-proxy, the example lua scripts
+are placed into /usr/share/doc/packages/mysql-proxy
+
+Windows
+-------
+Prerequisites:
+Visual C++ 2008 Express  -  http://www.microsoft.com/express/vc/ (free download, but needs free registration to use for more than 30 days)
+bzr (if using Launchpad) -  http://bazaar-vcs.org/Download
+MySQL Server (>5.0)      -  http://dev.mysql.com/downloads/ (5.1 recommended)
+7-Zip                    -  http://www.7-zip.org/ (to open tar.gz files)
+CMake (2.6)              -  http://www.cmake.org/files/v2.6/cmake-2.6.4-win32-x86.exe
+GLib2 (>=2.16)           -  http://www.gtk.org/download-windows.html you need both the "bin" and "dev" binary packages
+libevent (1.4.11)        -  source only: http://monkey.org/~provos/libevent/ (you need the exact version!)
+Lua (>=5.1.4)            -  source only: http://www.lua.org/download.html
+Flex                     -  binary only: http://gnuwin32.sourceforge.net/packages/flex.htm
+
+Compiling MySQL Proxy on Windows is a bit more involved, mostly because it has some dependencies that are unusual for
+native Windows and unlike on Linux, Windows does not have a package manager like rpm or apt.
+We do not use cygwin to avoid forcing users to install a complete Cygwin environment, even though Cygwin would make
+most of this straightforward.
+However, for all dependencies we need, with the exception of libevent, there are binary packages with DLLs available.
+Libevent must be compiled as a DLL, but MySQL Proxy comes with the patches and CMake files to transparently do so.
+
+After downloading all the packages from above install both Visual C++ 2008 Express, bzr, 7-Zip, CMake and MySQL Server
+as any other Windows application that comes with an installer.
+Attention: For the MySQL Server be sure to also install the "Developer Components".
+You only need to install the "C Include Files/Lib Files".
+It helps if you make sure to let the installers add their respective programs to the PATH variable, this makes dealing
+with them on the command line easier.
+
+Next, choose a directory where you will build MySQL Proxy and extract the dependencies to. A short path without spaces
+is preferred because it makes it easier to enter the paths when running CMake (this example will use c:\work).
+
+If you have downloaded the source package of MySQL Proxy, extract it to c:\work. If you are using the latest sources from
+Launchpad, you can use the Windows Explorer with the TortoiseBzr plugin to branch the sources to c:\work.
+This example will assume the MySQL Proxy sources are in c:\work\mysql-proxy.
+
+Extract Flex, the two GLib2 packages and Lua to c:\work.
+Note: Some files in the "dev" and "bin" GLib2 packages are identical, simply let 7-Zip overwrite them. The two packages are
+necessary because one contains the .lib files and the other contains the DLLs we need at runtime (they get copied into the
+installer package).
+
+At this point your folder structure in c:\work should look like this (omitting the subdirectories for brevity):
+c:\work\
+    flex\
+    glib\
+    lua-5.1.14\
+    mysql-proxy\
+
+Since the Windows binaries available for Lua 5.1 are using a different version of Microsoft's C runtime dlls, we need to compile
+it ourselves. In order to make it work for MySQL Proxy, we need to add two compiler flags to the .bat file Lua provides for
+compiling with Visual Studio.
+In the file etc\luavs.bat, edit this line:
+@set MYCOMPILE=cl /nologo /MD /O2 /W3 /c /D_CRT_SECURE_NO_DEPRECATE
+to:
+@set MYCOMPILE=cl /nologo /MD /O2 /W3 /c /D_CRT_SECURE_NO_DEPRECATE /D_BIND_TO_CURRENT_MFC_VERSION=1 /D_BIND_TO_CURRENT_CRT_VERSION=1
+
+Then go to the Lua source directory and run the .bat file:
+cd c:\work\lua-5.1.4
+etc\luavs.bat
+
+The resulting src\lua51.dll is now linked to the correct runtime DLL and can be used with MySQL Proxy.
+
+Note that we have not extracted libevent yet. Since we will be building libevent from source with our DLL patches applied,
+we extract libevent into a subdirectory of the MySQL Proxy sources. Using 7-Zip extract the folder libevent-1.4.11-stable into:
+    c:\work\mysql-proxy\deps\
+Attention: When extracting libevent be sure to extract the folder, not the .tar file inside the .tar.gz archive (when opening
+libevent-1.4.11-stable.tar.gz 7-Zip will only follow the .gz part, double click on the libevent-1.4.11-stable.tar inside 7-Zip
+to be able to extract the folder, not the .tar archive!)
+At this point c:\work\mysql-proxy\deps\libevent-1.4.11-stable should be a folder containing source files.
+
+In a command line window, cd to c:\work\mysql-proxy.
+We recommend performing an out-of-source build, i.e. executing CMake from a different directory than were the sources are,
+because that makes it easy to throw away everything that was not part of the source archive - invaluable when fixing with build errors.
+
+Create a directory called "build":
+    mkdir build
+    cd build
+
+Inside the directory c:\work\mysql-proxy\build execute the following CMake command line (you may have to enable word wrapping in the program
+you use to read this since it's all on one line to avoid problems with copy/pasting the command):
+
+cmake -G "Visual Studio 9 2008" -DFLEX_EXECUTABLE=c:\work\flex\bin\flex -DMYSQL_INCLUDE_DIRS="c:\Program Files\MySQL\MySQL Server 5.1\include" -DGLIB_DEV_BASE_DIR=c:\work\glib -DLUA_INCLUDE_DIRS=c:\work\lua-5.1.4\src -DLUA_LIBRARY_DIRS=c:\work\lua-5.1.4\src -DCMAKE_INSTALL_PREFIX=c:\work\install -DCMAKE_BUILD_TYPE=Release ..
+
+This command should end with a line like this:
+-- Build files have been written to: C:/work/mysql-proxy/build
+
+Now we can actually compile MySQL Proxy:
+You can either open the Visual C++ IDE and open the mysql-proxy.sln Solution file in c:\work\mysql-proxy\build and build the solution, or
+use the vcbuild command from the command line. Both do the same thing.
+If you want to use the binaries on a different machine than where you compiled them on, be sure to build using the "Release" configuration!
+In the IDE there is a dropdown that let's you select it, or from the command line do:
+cd c:\work\mysql-proxy\build
+vcbuild mysql-proxy.sln "Release|Win32"
+At this point, there will be lots of warnings during the compilation, but you can safely ignore them. However there should be no errors.
+
+The build should end in a line like:
+Build complete: 88 Projects succeeded, 0 Projects failed, 28 Projects skipped
+
+You cannot easily run MySQL Proxy from its build directory, because it will not find the necessary DLLs. To produce a ZIP file you can use
+to "install" MySQL Proxy use CPack (part of CMake):
+
+  $ cpack -G ZIP
+
+(Note: CPack also supports NSIS installers, so if you have NSIS installed you can use cpack -G NSIS)
+It will produce a ZIP file named like "mysql-proxy-0.7.2-win32.zip" in the directory c:\work\mysql-proxy\build.
+Simply extract this ZIP file to whereever you want to install MySQL Proxy. Inside the new directory there will be the familiar
+bin\mysql-proxy.exe command.
+
+Verify that it works by running:
+
+  # bin\mysql-proxy --help-all
+
+Whew that's it, we are done :)
+
+All other Platforms
+-------------------
+
+On most platforms a simple configure run works nicely:
+
+  $ ./configure 
+
+
+If lua isn't shipped with a lua.pc file for pkg-config we need to override the 
+pkg-config checks:
+
+  $ ./configure \
+    LUA_CFLAGS="-I/directory/of/lua.h" \
+    LUA_LDFLAGS="-L/directory/of/liblua.so -llua"
+
+In case libevent is not detected correctly, you should set LDFLAGS and CPPFLAGS:
+
+  $ ./configure \
+    LDFLAGS="-L/directory/of/libevent.so -levent" \
+    CPPFLAGS="-I/directory/of/event.h"
+
+In case the detected MySQL is not the correct one:
+
+  export DEFAULT_MYSQL=/path/to/mysql-5.1
+  export MYSQL_LIBS="-L${DEFAULT_MYSQL} -lmysqlclient -lz -lm"
+  export MYSQL_CFLAGS="-I${DEFAULT_MYSQL}/include"
+  export MYSQL_CONFIG="${DEFAULT_MYSQL}/bin/mysql_config"
+  export MYSQL_TEST_BIN="${DEFAULT_MYSQL}/bin/mysqltest"
+
+
+Building
+========
+
+  $ make
+  $ make install
+
+You should have a /usr/local/sbin/mysql-proxy now.
+
+Documentation
+=============
+
+MySQL Proxy uses gtk-doc and sphinx for its documentation. 
+
+API docs
+--------
+
+To get API documentation install:
+
+  $ apt-get install gtk-doc-tools
+
+and run ./configure with '--enable-gtk-doc'. It will generate HTML output in 
+
+  $ cd doc/reference/chassis/html/
+  $ xdg-open index.html
+
+You also integrate the generated documentation with 'devhelp':
+
+  $ mkdir -p ~/.local/share/devhelp/books/
+  $ ln -s doc/reference/chassis/html/ ~/.local/share/devhelp/books/chassis
+
+and run
+
+  $ devhelp -s chassis_new &
+
+to lookup the API docs in devhelp.
+
+Developer Docs
+--------------
+
+The more high-level description is written using with sphinx:
+
+  $ apt-get install python-sphinx
+
+and is generated by:
+
+  $ make html
+
+which is stored in
+
+  $ cd doc/html/
+  $ xdg-open index.html
+
+

@@ -1,0 +1,18 @@
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+2	1
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+2	2
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+3	1
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+2	3
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+4	1
+SELECT conn_id, stmt_id;
+conn_id	stmt_id
+5	1
