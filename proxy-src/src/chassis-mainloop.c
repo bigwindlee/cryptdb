@@ -65,6 +65,8 @@ static volatile int signal_shutdown;
 static volatile sig_atomic_t signal_shutdown;
 #endif
 
+#define _EVENT_VERSION "libevent-1.4.11-stable"
+
 /**
  * chassis_init:
  *

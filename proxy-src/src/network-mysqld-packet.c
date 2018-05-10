@@ -48,6 +48,8 @@
 #define C(x) x, sizeof(x) - 1
 #define S(x) x->str, x->len
 
+#define CLIENT_SECURE_CONNECTION 32768  /* New 4.1 authentication */
+
 /**
  * network_mysqld_com_query_result_new:
  *

@@ -67,8 +67,8 @@ def fn(cdb_path, in_make_v=nil, in_gcc_v=nil)
 
     # untar
     proxy_path = File.join(cryptdb_path, PROXY_NAME)
-    proxy_tar_path = File.join(bins_path, PROXY_NAME) + TAR_GZ
-    cryptdb_shell.>("tar zxf #{proxy_tar_path}") 
+    #proxy_tar_path = File.join(bins_path, PROXY_NAME) + TAR_GZ
+    #cryptdb_shell.>("tar zxf #{proxy_tar_path}") 
 
     # automake compatibility fix
     # https://www.flameeyes.eu/autotools-mythbuster/forwardporting/automake.html
@@ -88,7 +88,8 @@ def fn(cdb_path, in_make_v=nil, in_gcc_v=nil)
     mp_shell.>("make")
     mp_shell.>("make install")
     File.delete(config_path)
-    mp_shell.>("rm -rf #{proxy_path}")
+    #mp_shell.>("rm -rf #{proxy_path}")
+
 
     #############################
     #            gcc

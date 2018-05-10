@@ -96,6 +96,7 @@
 
 #define C(x) x, sizeof(x) -1
 #define S(x) x->str, x->len
+#define CLIENT_SECURE_CONNECTION 32768  /* New 4.1 authentication */
 
 struct chassis_plugin_config {
 	gchar *address;                   /**< listening address of the admin interface */
